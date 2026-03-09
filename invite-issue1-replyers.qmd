@@ -124,24 +124,37 @@ get_pending_invitations_gh <- function(org) {
 # 4. 邀请用户加入组织
 invite_user_to_org_gh <- function(org, username) {
   message(sprintf("正在邀请用户 %s 加入组织 %s...", username, org))
-  
+
   tryCatch({
-    gh::gh(
-      "PUT /orgs/{org}/memberships/{username}",
-      org = org,
+    # 1. 先获取用户的数字 ID
+    user_info <- gh::gh(
+      "/users/{username}",
       username = username,
-      role = "member", # 设置角色为成员
+      .send_headers = c(Accept = "application/vnd.github.v3+json")
+    )
+    user_id <- user_info$id
+
+    gh::gh(
+      "POST /orgs/{org}/invitations",
+      org = org,
+      invitee_id = user_id,
+      role = "direct_member", # 设置角色为成员
       .send_headers = c(Accept = "application/vnd.github.v3+json")
     )
     message(sprintf("成功邀请 %s 加入组织 %s。", username, org))
   }, error = function(e) {
-    warning(sprintf("未能邀请 %s 加入组织 %s。错误信息: %s", username, org, e$message))
+    stop(sprintf("未能邀请 %s 加入组织 %s。错误信息: %s", username, org, e$message))
   })
 }
+
+
 ```
 
 ```{r}
 # --- 执行脚本 ---
+# 让 R 的 gh 包使用 gh CLI 的 Token
+Sys.setenv(GITHUB_PAT = system("gh auth token", intern = TRUE))
+
 
 # 1. 获取 Issue 1 的所有回复者
 issue_replyers <- get_issue_replyers_gh(ORG_NAME, REPO_NAME, ISSUE_NUM)

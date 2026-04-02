@@ -1,0 +1,22 @@
+---
+title: "首页"
+website:
+  title: "汪同宇的个人网站"
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - index.qmd
+      - about.qmd
+---
+
+## 你好，我是 汪同宇
+
+- **学校**：华中农业大学
+- **年级**：研一
+
+欢迎来到我的个人主页。
+
+### 📬 联系方式
+- **QQ**: 2160698686
+- **Email**: 2160698686@qq.com
